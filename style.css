@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    background-color: #111;
+    font-family: sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#life-counter {
+    padding: 10px;
+    font-size: 18px;
+}
+
+#game-container {
+    border: 2px solid white;
+    width: 1000px;
+    height: 800px;
+    overflow: hidden;
+    position: relative;
+}
+
+#game-area {
+    position: relative;
+    width: 1000px;
+    height: 800px;
+    background-color: #222;
+}
+
+#player {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: red;
+    left: 492px;
+    /* centered (1000 / 2 - 8) */
+    bottom: 0;
+}
+
+.obstacle {
+    position: absolute;
+    height: 16px;
+    background-color: lime;
+    top: 0;
+}
+
+
+#message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: white;
+    z-index: 10;
+}
+
+#level {
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    /* Adjust as needed */
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+}
