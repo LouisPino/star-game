@@ -8,14 +8,11 @@ const server = http.createServer((req, res) => {
     let filePath
     switch (req.url) {
         case "/":
-            filePath = path.join(__dirname, './mobile/html/default.html');
+            filePath = path.join(__dirname, 'index.html');
             break
         case "/display":
-            filePath = path.join(__dirname, './display/html/default.html');
+            filePath = path.join(__dirname, 'display.html');
             break
-        case "/qrcode.min.js":
-            filePath = path.join(__dirname, 'qrcode.min.js');
-            break;
         default:
             // Ensure static files from /assets, /images, /scripts are served
             filePath = path.join(__dirname, req.url);
@@ -140,8 +137,7 @@ function handleNewStar(text) {
 
 module.exports = [
     sendToWebClients,
-    sendToDisplay,
-    sendSectionChange
+    sendToDisplay
 ]
 
 
