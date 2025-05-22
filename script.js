@@ -1,119 +1,114 @@
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
-const levelDisplay = document.getElementById('level');
+const tallBg = document.getElementById('tall-bg');
+const message = document.getElementById('message');
 
+const baseBottom = 300;
 let lives = 5;
-let playerX = 492;
-let playerY = 100;
-let obstacleCount = 0;
-let risingSpeed = 0.33; // 20px/sec ≈ 0.33px/frame (assuming 60fps)
-let moveSpeed = 5;
+let playerX = 300;
+let playerY = baseBottom;
 let spawnInterval = 5000;
-let gameWidth = 1000;
-let gameHeight = 800;
+
+const gameWidth = 700;
+const gameHeight = 900;
+const maxVerticalOffset = 200;
+const playerSize = 100;
+const obstacleSize = 160;
+const moveSpeed = 20;
+const obstacleSpeed = 10;
+
 let stageActive = true;
-let level = 1;
-
-
 
 function movePlayer(e) {
-    if (e.key === "ArrowLeft") {
-        playerX -= moveSpeed;
-    } else if (e.key === "ArrowRight") {
-        playerX += moveSpeed;
-    }
+    if (e.key === "ArrowLeft") playerX -= moveSpeed;
+    if (e.key === "ArrowRight") playerX += moveSpeed;
+    if (e.key === "ArrowUp") playerY += moveSpeed;
+    if (e.key === "ArrowDown") playerY -= moveSpeed;
 
-    // Clamp within game area
-    playerX = Math.max(0, Math.min(gameWidth - 16, playerX));
+    playerX = Math.max(0, Math.min(gameWidth - playerSize, playerX));
+    const minY = baseBottom - maxVerticalOffset;
+    const maxY = baseBottom + maxVerticalOffset;
+    playerY = Math.max(minY, Math.min(maxY, playerY));
+
     player.style.left = `${playerX}px`;
+    player.style.bottom = `${playerY}px`;
 }
 
-function createObstaclePair() {
-    const gapWidth = 40;
-    const gapStart = Math.random() * (gameWidth - gapWidth);
+function launchObstacle() {
+    const obstacle = document.createElement('img');
+    obstacle.src = "badGuy.gif";
+    obstacle.classList.add("obstacle");
 
-    const left = document.createElement('div');
-    const right = document.createElement('div');
-    left.className = right.className = 'obstacle';
+    const obstacleY = Math.random() * (gameHeight - obstacleSize);
+    obstacle.dataset.left = gameWidth;
+    obstacle.dataset.bottom = obstacleY;
 
-    left.style.width = `${gapStart}px`;
-    left.style.left = `0px`;
-    left.style.top = `0px`;
+    obstacle.style.left = `${gameWidth}px`;
+    obstacle.style.bottom = `${obstacleY}px`;
 
-    right.style.width = `${gameWidth - gapStart - gapWidth}px`;
-    right.style.left = `${gapStart + gapWidth}px`;
-    right.style.top = `0px`;
+    gameArea.appendChild(obstacle);
 
-    gameArea.appendChild(left);
-    gameArea.appendChild(right);
-
-    // Increment obstacle count and increase speeds every 3 pairs
-    obstacleCount++;
-    if (obstacleCount % 3 === 0) {
-        risingSpeed += 1 / 60; // ~1px/sec faster
-        moveSpeed += 1;
-    }
+    setTimeout(() => obstacle.remove(), 8000);
 }
 
-
-function checkCollision(r1, r2) {
-    return !(
-        r1.bottom < r2.top ||
-        r1.top > r2.bottom ||
-        r1.right < r2.left ||
-        r1.left > r2.right
+function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return (
+        x1 < x2 + w2 &&
+        x1 + w1 > x2 &&
+        y1 < y2 + h2 &&
+        y1 + h1 > y2
     );
 }
 
 function gameLoop() {
-    playerY += risingSpeed;
     player.style.bottom = `${playerY}px`;
 
-    const playerRect = player.getBoundingClientRect();
-    const gameRect = gameArea.getBoundingClientRect();
+    const obstacles = document.querySelectorAll('img.obstacle');
 
-    const obstacles = document.querySelectorAll('.obstacle');
     obstacles.forEach(obs => {
-        // Move obstacle upward
-        const currentTop = parseFloat(obs.style.top);
-        obs.style.top = `${currentTop + risingSpeed}px`;
+        let obsLeft = parseFloat(obs.dataset.left);
+        let obsBottom = parseFloat(obs.dataset.bottom);
 
-        const obsRect = obs.getBoundingClientRect();
-        if (checkCollision(playerRect, obsRect)) {
-            // Push the player down by 3px per frame during collision
-            playerY -= 3;
-            player.style.bottom = `${playerY}px`;
+        obsLeft -= obstacleSpeed;
+        obs.dataset.left = obsLeft;
+        obs.style.left = `${obsLeft}px`;
+        const playerTop = gameHeight - (playerY + playerSize);
+        const obstacleTop = gameHeight - (obsBottom + obstacleSize);
+        if (checkCollision(playerX, playerTop, playerSize, playerSize, obsLeft, obstacleTop, obstacleSize, obstacleSize)) {
+            lives--;
+            livesDisplay.textContent = lives;
+            obs.remove();
+
+            if (lives <= 0) {
+                alert('Game Over!');
+                window.location.reload();
+                return;
+            } else {
+                stageActive = false;
+                resetStage();
+            }
         }
 
-        // Remove if off screen
-        if (currentTop > gameHeight) obs.remove();
-        if (playerY + 16 >= gameHeight) {  // Player reached top
-            level++;
-
-            spawnInterval = Math.max(2000, 5000 - (level - 1) * 1000);
-            levelDisplay.textContent = `Level: ${level}`;
-
-            // Clear existing obstacles
-            document.querySelectorAll('.obstacle').forEach(el => el.remove());
-
-            // Reset player position to bottom start
-            playerY = 100;
-            player.style.bottom = `${playerY}px`;
-
-            console.log(`Level up! Level: ${level}, spawnInterval: ${spawnInterval}ms`);
-        }
-
+        if (obsLeft + obstacleSize < 0) obs.remove();
     });
 
-    // Check if player hits bottom
+    if (playerY + playerSize >= gameHeight) {
+        spawnInterval = Math.max(2000, 5000 - 3 * 1000);
+        document.querySelectorAll('.obstacle').forEach(el => el.remove());
+        playerY = baseBottom;
+        player.style.bottom = `${playerY}px`;
+
+        // Scroll background
+    }
+
     if (playerY <= 0) {
         lives--;
         livesDisplay.textContent = lives;
-
         if (lives <= 0) {
             alert('Game Over!');
             window.location.reload();
+            return;
         } else {
             stageActive = false;
             resetStage();
@@ -121,40 +116,33 @@ function gameLoop() {
     }
 
     if (stageActive) requestAnimationFrame(gameLoop);
-    else setTimeout(() => requestAnimationFrame(gameLoop), 100); // keep checking when paused
+    else setTimeout(() => requestAnimationFrame(gameLoop), 100);
 }
-
-function startSpawningObstacles() {
-    createObstaclePair();
-    setTimeout(startSpawningObstacles, spawnInterval);
-}
-
-
-window.addEventListener('keydown', movePlayer);
-setTimeout(() => {
-    document.getElementById('message').style.display = 'none';
-    startSpawningObstacles();
-    if (stageActive) requestAnimationFrame(gameLoop);
-    else setTimeout(() => requestAnimationFrame(gameLoop), 100); // keep checking when paused
-}, 2000);
-
 
 function resetStage() {
-    // Reset player position
-    playerX = 492;
-    playerY = 100;
+    playerX = 300;
+    playerY = baseBottom;
     player.style.left = `${playerX}px`;
     player.style.bottom = `${playerY}px`;
 
-    // Remove all existing obstacles
     document.querySelectorAll('.obstacle').forEach(el => el.remove());
+    message.style.display = 'block';
 
-    // Pause and show message
-    document.getElementById('message').style.display = 'block';
-
-    // Restart after delay
     setTimeout(() => {
-        document.getElementById('message').style.display = 'none';
+        message.style.display = 'none';
         stageActive = true;
     }, 2000);
 }
+
+function startSpawningObstacles() {
+    launchObstacle();
+    setTimeout(startSpawningObstacles, spawnInterval);
+}
+
+window.addEventListener('keydown', movePlayer);
+
+setTimeout(() => {
+    message.style.display = 'none';
+    startSpawningObstacles();
+    requestAnimationFrame(gameLoop);
+}, 2000);
