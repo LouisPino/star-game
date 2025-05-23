@@ -62,6 +62,10 @@ function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
 }
 
 function gameLoop() {
+    tallBg.style.transition = "top 0s linear"
+    tallBg.style.top = "-6000px"
+    tallBg.style.transition = "top 90s linear"
+    tallBg.style.top = "1000px"
     player.style.bottom = `${playerY}px`;
 
     const obstacles = document.querySelectorAll('img.obstacle');
@@ -120,6 +124,10 @@ function gameLoop() {
 }
 
 function resetStage() {
+    tallBg.style.transition = "top 0s linear"
+    tallBg.style.top = "-6000px"
+    tallBg.style.transition = "top 90s linear"
+    tallBg.style.top = "1000px"
     playerX = 300;
     playerY = baseBottom;
     player.style.left = `${playerX}px`;

@@ -40,6 +40,7 @@ body {
     top: 300px;
     left: 100%;
     z-index: 3;
+    border: 1px solid red;
 }
 
 #message {
@@ -57,7 +58,6 @@ body {
     position: absolute;
     top: -6000px;
     width: 100%;
-    background: linear-gradient(to bottom, #333, #000);
     z-index: 1;
     transition: top 90s linear;
 }
