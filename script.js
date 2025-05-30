@@ -1,3 +1,30 @@
+document.addEventListener("DOMContentLoaded", function () {
+    initializeWebSocket(location.hostname);
+    function initializeWebSocket(ip) {
+        socket = new WebSocket(`ws://${ip}:8000/display`);
+        // Confirm connection success
+        socket.onopen = function (e) {
+            console.log("WebSocket connection established!");
+        };
+
+        // Run when message is received from server (Max -> Server -> Client)
+        socket.onmessage = function (event) {
+            let msg = JSON.parse(event.data);
+            switch (msg.type) {
+                case `initialFileServe`:
+                    break;
+                case "newStar":
+                    handleNewStar(msg.data)
+                    break;
+            }
+        };
+    }
+});
+
+
+
+
+
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
@@ -6,7 +33,7 @@ const message = document.getElementById('message');
 
 const baseBottom = 300;
 let lives = 5;
-const maxTime = 100;
+const maxTime = 7;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
@@ -178,11 +205,23 @@ function gameOver() {
     alert("you suck")
     window.location.reload();
 }
-
+let gameAlreadyWon = false;
 
 function gameWin() {
-    alert("you win")
-    window.location.reload();
-    //sendToServer - wish
+    if (gameAlreadyWon) return; // prevent running more than once
+    gameAlreadyWon = true;
+
+    sendToServer({ type: "win", val: "lick" });
+
+    setTimeout(() => {
+        alert("You win!");
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+    }, 100);
 }
 
+
+function sendToServer(msg) {
+    socket.send(JSON.stringify(msg));
+}

@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 case `initialFileServe`:
                     break;
                 case "newStar":
-                    handlenewStar(msg.data)
+                    handleNewStar(msg.data)
                     break;
             }
         };
@@ -24,4 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function sendToServer(msg) {
     socket.send(JSON.stringify(msg));
+}
+
+function handleNewStar(text) {
+    console.log(text)
 }

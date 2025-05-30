@@ -3,6 +3,7 @@ const http = require('http');
 const path = require('path');
 const WebSocket = require('ws');
 const url = require('url');
+const { send } = require('process');
 /////////////////////////Initialize server
 const server = http.createServer((req, res) => {
     let filePath
@@ -129,11 +130,9 @@ function sendToDisplay(data) {
 
 //star functions
 function handleNewStar(text) {
+    console.log(text)
     sendToDisplay({ type: "newStar", data: text })
 }
-
-
-
 
 module.exports = [
     sendToWebClients,
