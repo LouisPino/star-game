@@ -39,11 +39,11 @@ function movePlayer(e) {
 function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     const obstacle = document.createElement('img');
-    obstacle.src = `badGuy${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}.jpg`;
+    obstacle.src = `badGuy${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}.jpg`;
     obstacle.classList.add("obstacle");
 
     const fromLeft = Math.random() < 0.5;
-    const obstacleY = Math.floor(Math.random() * (400)) + 100;
+    const obstacleY = Math.floor(Math.random() * (400)) + 20;
 
     obstacle.dataset.bottom = obstacleY;
     obstacle.style.bottom = `${obstacleY}px`;
