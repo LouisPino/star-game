@@ -1,6 +1,6 @@
 .message {
     position: absolute;
-    width: 400px;
+    /* width: 400px; */
     height: auto;
     font-size: 2rem;
     pointer-events: none;

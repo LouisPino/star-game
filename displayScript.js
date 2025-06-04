@@ -29,12 +29,14 @@ function sendToServer(msg) {
 let starCount = 0;
 
 const columnHeights = {};
-const boxWidth = 400;
+const boxWidth = window.innerWidth / 6;
 
 function handleNewStar(text) {
     const message = document.createElement("h1");
     message.classList.add("message");
     message.innerHTML = text;
+    message.style.width = `${boxWidth}px`;
+
 
     // Set initial position off-screen (center bottom)
     const startLeft = window.innerWidth / 2 - boxWidth / 2;
