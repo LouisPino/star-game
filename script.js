@@ -67,6 +67,7 @@ function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     const obstacle = document.createElement('img');
     obstacle.src = `badGuy${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}.jpg`;
+    obstacle.style.filter = `hue-rotate(${Math.random() >= .5 ? "0" : "180"}deg)`
     obstacle.classList.add("obstacle");
 
     const fromLeft = Math.random() < 0.5;
@@ -97,7 +98,7 @@ function gameLoop() {
     tallBg.style.transition = "top 0s linear"
     tallBg.style.top = "-6000px"
     tallBg.style.transition = `top ${maxTime}s linear`
-    tallBg.style.top = "1000px"
+    tallBg.style.top = "0px"
     player.style.bottom = `${playerY}px`;
     let visible = true;
     const interval = 150; // ms
