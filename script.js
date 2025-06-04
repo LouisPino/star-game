@@ -33,7 +33,7 @@ const message = document.getElementById('message');
 
 const baseBottom = 300;
 let lives = 5;
-const maxTime = 7;
+const maxTime = 15;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
@@ -185,20 +185,28 @@ function startSpawningObstacles() {
 
 window.addEventListener('keydown', movePlayer);
 
-setTimeout(() => {
-    message.style.display = 'none';
-    startSpawningObstacles();
+document.getElementById("message").style.display = "none";
+
+function startGame() {
+    document.getElementById("start-screen").style.display = "none";
+    document.getElementById("message").style.display = "block";
+    setTimeout(() => {
+        message.style.display = 'none';
+        setTimeout(startSpawningObstacles, 1000)
+    }, 3000)
     requestAnimationFrame(gameLoop);
-}, 2000);
 
+    // Start game timer
+    gameTimer = setInterval(() => {
+        timePassed++;
+        if (timePassed >= maxTime) {
+            gameWin();
+        }
+    }, 1000);
+}
 
+document.getElementById("start-button").addEventListener("click", startGame);
 
-const gameTimer = setInterval(() => {
-    timePassed++
-    if (timePassed >= maxTime) {
-        gameWin()
-    }
-}, 1000)
 
 
 function gameOver() {
@@ -211,10 +219,10 @@ function gameWin() {
     if (gameAlreadyWon) return; // prevent running more than once
     gameAlreadyWon = true;
 
-    sendToServer({ type: "win", val: "lick" });
+    sendToServer({ type: "win", val: document.getElementById("wish").value })
 
     setTimeout(() => {
-        alert("You win!");
+        alert("you win");
         setTimeout(() => {
             window.location.reload();
         }, 100);

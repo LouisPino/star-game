@@ -28,4 +28,5 @@ function sendToServer(msg) {
 
 function handleNewStar(text) {
     console.log(text)
+    document.getElementById("message").innerHTML = text
 }
