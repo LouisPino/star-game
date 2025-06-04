@@ -33,7 +33,7 @@ const message = document.getElementById('message');
 
 const baseBottom = 300;
 let lives = 5;
-const maxTime = 15;
+const maxTime = 10;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;

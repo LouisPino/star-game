@@ -14,6 +14,12 @@ body {
     font-size: 18px;
 }
 
+#wish {
+    height: 200px;
+    width: 400px;
+    font-size: 32px;
+}
+
 #game-area {
     position: relative;
     width: 700px;

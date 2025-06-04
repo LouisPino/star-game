@@ -27,6 +27,7 @@ function sendToServer(msg) {
 }
 
 function handleNewStar(text) {
-    console.log(text)
-    document.getElementById("message").innerHTML = text
+    const message = document.getElementById("message")
+    message.innerHTML = text
+    message.classList.add("float-up")
 }
