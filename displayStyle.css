@@ -1,28 +1,31 @@
-#message {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
+.message {
+    position: absolute;
+    width: 400px;
+    height: auto;
     font-size: 2rem;
     pointer-events: none;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: top 1s ease-out, left 1s ease-out, opacity 1s;
+    color: lightpink;
+    border: 4px dotted lightcoral;
+    background-color: aliceblue;
+    font-weight: 100;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 body {
     background-color: black;
     color: white;
+    margin: 0;
+    overflow: hidden;
 }
-
 
 .float-up {
-    animation: floatUp 2s ease-out forwards;
-}
-
-@keyframes floatUp {
-    0% {
-        bottom: -100px;
-    }
-
-    100% {
-        bottom: 300px;
-    }
+    opacity: 1;
 }
