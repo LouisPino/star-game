@@ -37,12 +37,13 @@ body {
     left: 300px;
     bottom: 300px;
     z-index: 3;
+    transition: 100ms linear;
 }
 
 .obstacle {
     position: absolute;
-    height: 240px;
-    width: 240px;
+    /* height: 280px; */
+    width: 280px;
     /* top: 300px; */
     left: 100%;
     z-index: 3;

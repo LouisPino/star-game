@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 case `initialFileServe`:
                     break;
                 case "newStar":
-                    handleNewStar(msg.data)
+                    // handleNewStar(msg.data)
                     break;
             }
         };
@@ -31,7 +31,7 @@ const livesDisplay = document.getElementById('lives');
 const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
 
-const baseBottom = 300;
+const baseBottom = 400;
 let lives = 5;
 const maxTime = 40;
 let playerX = 300;
@@ -40,9 +40,9 @@ let spawnInterval = 5000;
 
 const gameWidth = 900;
 const gameHeight = 900;
-const maxVerticalOffset = 200;
+const maxVerticalOffset = 400;
 const playerSize = 100;
-const obstacleSize = 160;
+const obstacleSize = 280;
 const moveSpeed = 30;
 const obstacleSpeedMax = 1;
 
