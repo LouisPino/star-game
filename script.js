@@ -33,18 +33,18 @@ const message = document.getElementById('message');
 
 const baseBottom = 300;
 let lives = 5;
-const maxTime = 3;
+const maxTime = 40;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
 
-const gameWidth = 700;
+const gameWidth = 900;
 const gameHeight = 900;
 const maxVerticalOffset = 200;
 const playerSize = 100;
 const obstacleSize = 160;
 const moveSpeed = 30;
-const obstacleSpeedMax = 4;
+const obstacleSpeedMax = 1;
 
 let stageActive = true;
 let timePassed = 0
@@ -63,15 +63,25 @@ function movePlayer(e) {
     player.style.bottom = `${playerY}px`;
 }
 
+const rightFacing = ["1A", "1B", "2A", "2B", "3A", "5A"]
+
 function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
+    let fileType = ""
+    let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}`
+    if (guyId === "3B" || guyId ==="1B"){
+        fileType = ".png"
+    }else{
+        fileType = ".gif"
+    }
+    let fullSrc = `badGuy${guyId}${fileType}`
     const obstacle = document.createElement('img');
-    obstacle.src = `badGuy${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}.jpg`;
-    obstacle.style.filter = `hue-rotate(${Math.random() >= .5 ? "0" : "180"}deg)`
+    obstacle.src = fullSrc;
+    // obstacle.style.filter = `hue-rotate(${Math.random() >= .5 ? "0" : "180"}deg)`
     obstacle.classList.add("obstacle");
 
-    const fromLeft = Math.random() < 0.5;
-    const obstacleY = Math.floor(Math.random() * (400)) + 20;
+    const fromLeft = rightFacing.includes(guyId)
+    const obstacleY = Math.floor(Math.random() * (600)) + 100;
 
     obstacle.dataset.bottom = obstacleY;
     obstacle.style.bottom = `${obstacleY}px`;
