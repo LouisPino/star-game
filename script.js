@@ -63,13 +63,14 @@ function movePlayer(e) {
     player.style.bottom = `${playerY}px`;
 }
 
-const rightFacing = ["1A", "1B", "2A", "2B", "3A", "5A"]
+const rightFacing = ["1A", "1B", "2A", "2B", "3A", "4B", "5A"]
+const typePng = ["4B", "1B", "3B"]
 
 function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     let fileType = ""
     let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}`
-    if (guyId === "3B" || guyId ==="1B"){
+    if (typePng.includes(guyId)){
         fileType = ".png"
     }else{
         fileType = ".gif"
@@ -199,6 +200,10 @@ window.addEventListener('keydown', movePlayer);
 document.getElementById("message").style.display = "none";
 
 function startGame() {
+    if(document.getElementById("wish").value === ""){
+        alert("Type a wish first!")
+        return
+    }
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("message").style.display = "block";
     setTimeout(() => {
