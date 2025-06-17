@@ -32,8 +32,8 @@ const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
 
 const baseBottom = 400;
-let lives = 5;
-const maxTime = 40;
+let lives = 50;
+const maxTime = 10;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
