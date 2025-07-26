@@ -32,8 +32,8 @@ const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
 
 const baseBottom = 400;
-let lives = 50;
-const maxTime = 10;
+let lives = 500;
+const maxTime = 60;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
@@ -70,9 +70,9 @@ function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     let fileType = ""
     let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}`
-    if (typePng.includes(guyId)){
+    if (typePng.includes(guyId)) {
         fileType = ".png"
-    }else{
+    } else {
         fileType = ".gif"
     }
     let fullSrc = `badGuy${guyId}${fileType}`
@@ -200,7 +200,7 @@ window.addEventListener('keydown', movePlayer);
 document.getElementById("message").style.display = "none";
 
 function startGame() {
-    if(document.getElementById("wish").value === ""){
+    if (document.getElementById("wish").value === "") {
         alert("Type a wish first!")
         return
     }
