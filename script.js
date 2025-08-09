@@ -32,7 +32,7 @@ const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
 
 const baseBottom = 400;
-let lives = 500;
+let lives = 5;
 const maxTime = 60;
 let playerX = 300;
 let playerY = baseBottom;
@@ -154,18 +154,18 @@ function gameLoop() {
     });
 
 
-    if (playerY <= 0) {
-        lives--;
-        livesDisplay.textContent = lives;
-        if (lives <= 0) {
-            alert('Game Over!');
-            window.location.reload();
-            return;
-        } else {
-            stageActive = false;
-            resetStage();
-        }
-    }
+    // if (playerY <= 0) {
+    //     lives--;
+    //     livesDisplay.textContent = lives;
+    //     if (lives <= 0) {
+    //         alert('Game Over!');
+    //         window.location.reload();
+    //         return;
+    //     } else {
+    //         stageActive = false;
+    //         resetStage();
+    //     }
+    // }
 
     if (stageActive) requestAnimationFrame(gameLoop);
     else setTimeout(() => requestAnimationFrame(gameLoop), 100);
