@@ -23,17 +23,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
-
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
 const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
+const replayBtn = document.getElementById('replay-button')
+const winModal = document.getElementById('win-modal')
+replayBtn.addEventListener("click", () => {
+    window.location.reload();
+})
 
 const baseBottom = 400;
-let lives = 5;
-const maxTime = 60;
+let lives = 500;
+const maxTime = 5;
+const endBuffer = 10;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
@@ -64,12 +68,13 @@ function movePlayer(e) {
 }
 
 const rightFacing = ["1A", "1B", "2A", "2B", "3A", "4B", "5A"]
+const leftFacing = ["4A", "3B"]
 const typePng = ["4B", "1B", "3B"]
 
 function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     let fileType = ""
-    let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}`
+    let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}` //-15 is an adjustment to make all zones move by faster, maxing out 15 seconds before end of game
     if (typePng.includes(guyId)) {
         fileType = ".png"
     } else {
@@ -80,28 +85,31 @@ function launchObstacle() {
     obstacle.src = fullSrc;
     // obstacle.style.filter = `hue-rotate(${Math.random() >= .5 ? "0" : "180"}deg)`
     obstacle.classList.add("obstacle");
-
-    const fromLeft = rightFacing.includes(guyId)
+    const dirNum = Math.floor(Math.random() * 2)
+    if (dirNum == 0 && rightFacing.includes(guyId)) {
+        obstacle.style.transform = "rotateY(180deg)"
+    }
+    if (dirNum == 1 && leftFacing.includes(guyId)) {
+        obstacle.style.transform = "rotateY(180deg)"
+    }
     const obstacleY = Math.floor(Math.random() * (600)) + 100;
-
     obstacle.dataset.bottom = obstacleY;
     obstacle.style.bottom = `${obstacleY}px`;
-    obstacle.style.left = fromLeft ? `${-obstacleSize}px` : `${gameWidth}px`;
-    obstacle.dataset.direction = fromLeft ? "right" : "left";
-
+    obstacle.style.left = dirNum ? `${-obstacleSize}px` : `${gameWidth}px`;
+    obstacle.dataset.direction = dirNum ? "right" : "left";
     gameArea.appendChild(obstacle);
 
-    setTimeout(() => obstacle.remove(), 8000);
+    setTimeout(() => obstacle.remove(), 10000);
 }
 
-
+const safeZone = 75
 
 function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
     return (
-        x1 < x2 + w2 &&
-        x1 + w1 > x2 &&
-        y1 < y2 + h2 &&
-        y1 + h1 > y2
+        x1 < x2 + w2 - safeZone &&
+        x1 + w1 > x2 + safeZone &&
+        y1 < y2 + h2 - safeZone &&
+        y1 + h1 > y2 + safeZone
     );
 }
 
@@ -192,7 +200,9 @@ function resetStage() {
 
 function startSpawningObstacles() {
     launchObstacle();
-    setTimeout(startSpawningObstacles, spawnInterval);
+    if (timePassed < maxTime - endBuffer - spawnInterval / 1000) {
+        setTimeout(startSpawningObstacles, spawnInterval);
+    }
 }
 
 window.addEventListener('keydown', movePlayer);
@@ -238,9 +248,8 @@ function gameWin() {
     sendToServer({ type: "win", val: document.getElementById("wish").value })
 
     setTimeout(() => {
-        alert("you win");
+        winModal.style.top = "15vh"
         setTimeout(() => {
-            window.location.reload();
         }, 100);
     }, 100);
 }
