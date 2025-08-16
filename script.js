@@ -40,7 +40,7 @@ replayBtns[1].addEventListener("click", () => {
 
 const baseBottom = 400;
 let lives = 5;
-const maxTime = 75;
+const maxTime = 1;
 const endBuffer = 5;
 let playerX = 300;
 let playerY = baseBottom;
