@@ -28,16 +28,20 @@ const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
 const tallBg = document.getElementById('tall-bg');
 const message = document.getElementById('message');
-const replayBtn = document.getElementById('replay-button')
+const replayBtns = document.querySelectorAll('.replay-button')
 const winModal = document.getElementById('win-modal')
-replayBtn.addEventListener("click", () => {
+const loseModal = document.getElementById('lose-modal')
+replayBtns[0].addEventListener("click", () => {
+    window.location.reload();
+})
+replayBtns[1].addEventListener("click", () => {
     window.location.reload();
 })
 
 const baseBottom = 400;
-let lives = 500;
-const maxTime = 5;
-const endBuffer = 10;
+let lives = 5;
+const maxTime = 75;
+const endBuffer = 5;
 let playerX = 300;
 let playerY = baseBottom;
 let spawnInterval = 5000;
@@ -67,14 +71,20 @@ function movePlayer(e) {
     player.style.bottom = `${playerY}px`;
 }
 
-const rightFacing = ["1A", "1B", "2A", "2B", "3A", "4B", "5A"]
+const rightFacing = ["1A", "1B", "2A", "2B", "2C", "4B", "5A"]
 const leftFacing = ["4A", "3B"]
 const typePng = ["4B", "1B", "3B"]
 
 function launchObstacle() {
     spawnInterval = Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000;
     let fileType = ""
-    let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}` //-15 is an adjustment to make all zones move by faster, maxing out 15 seconds before end of game
+    let guyId = `${Math.min(5, Math.floor(timePassed / (maxTime / 5)) + 1)}${Math.random() >= .5 ? "A" : "B"}`
+    if (guyId[0] === "2") {
+        guyId = Math.random() >= .66 ? guyId : "2C"
+    }
+    if (guyId === "3A") {
+        guyId = "3B"
+    }
     if (typePng.includes(guyId)) {
         fileType = ".png"
     } else {
@@ -162,19 +172,6 @@ function gameLoop() {
     });
 
 
-    // if (playerY <= 0) {
-    //     lives--;
-    //     livesDisplay.textContent = lives;
-    //     if (lives <= 0) {
-    //         alert('Game Over!');
-    //         window.location.reload();
-    //         return;
-    //     } else {
-    //         stageActive = false;
-    //         resetStage();
-    //     }
-    // }
-
     if (stageActive) requestAnimationFrame(gameLoop);
     else setTimeout(() => requestAnimationFrame(gameLoop), 100);
 }
@@ -218,6 +215,7 @@ function startGame() {
     document.getElementById("message").style.display = "block";
     setTimeout(() => {
         message.style.display = 'none';
+        livesDisplay.style.visibilty = "visible"
         setTimeout(startSpawningObstacles, 1000)
     }, 3000)
     requestAnimationFrame(gameLoop);
@@ -226,7 +224,7 @@ function startGame() {
     gameTimer = setInterval(() => {
         timePassed++;
         if (timePassed >= maxTime) {
-            gameWin();
+            setTimeout(gameWin, 3000)
         }
     }, 1000);
 }
@@ -236,8 +234,9 @@ document.getElementById("start-button").addEventListener("click", startGame);
 
 
 function gameOver() {
-    alert("you suck")
-    window.location.reload();
+    setTimeout(() => {
+        loseModal.style.top = "15vh"
+    }, 100);
 }
 let gameAlreadyWon = false;
 
@@ -249,8 +248,6 @@ function gameWin() {
 
     setTimeout(() => {
         winModal.style.top = "15vh"
-        setTimeout(() => {
-        }, 100);
     }, 100);
 }
 

@@ -14,7 +14,12 @@ body {
 
 #life-counter {
     padding: 10px;
-    font-size: 18px;
+    font-size: 32px;
+}
+
+#life-star {
+    width: 32px;
+    height: 32px;
 }
 
 #wish {
@@ -124,6 +129,26 @@ body {
     font-size: 32px;
 }
 
+#lose-modal {
+    position: absolute;
+    background-color: aliceblue;
+    z-index: 11;
+    top: 100vh;
+    width: 80vw;
+    height: 70vh;
+    transition: top 300ms ease-in-out;
+    color: lightpink;
+    border: 4px dotted lightcoral;
+    background-color: aliceblue;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    color: blue;
+    font-size: 32px;
+}
+
 #win-star {
     /* position: absolute; */
     width: 300px;
@@ -138,7 +163,7 @@ body {
 
 }
 
-#replay-button {
+.replay-button {
     font-family: "Caveat", cursive;
     background-color: lightpink;
     border: 4px dotted lightcoral;
