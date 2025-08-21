@@ -40,7 +40,7 @@ replayBtns[1].addEventListener("click", () => {
 
 const baseBottom = 400;
 let lives = 5;
-const maxTime = 1;
+const maxTime = 75; //75
 const endBuffer = 5;
 let playerX = 300;
 let playerY = baseBottom;
@@ -49,7 +49,7 @@ let spawnInterval = 5000;
 const gameWidth = 900;
 const gameHeight = 900;
 const maxVerticalOffset = 400;
-const playerSize = 100;
+const playerSize = 200;
 const obstacleSize = 280;
 const moveSpeed = 30;
 const obstacleSpeedMax = 1;
@@ -102,7 +102,7 @@ function launchObstacle() {
     if (dirNum == 1 && leftFacing.includes(guyId)) {
         obstacle.style.transform = "rotateY(180deg)"
     }
-    const obstacleY = Math.floor(Math.random() * (600)) + 100;
+    const obstacleY = Math.floor(Math.random() * (500)) + 100;
     obstacle.dataset.bottom = obstacleY;
     obstacle.style.bottom = `${obstacleY}px`;
     obstacle.style.left = dirNum ? `${-obstacleSize}px` : `${gameWidth}px`;
@@ -112,7 +112,7 @@ function launchObstacle() {
     setTimeout(() => obstacle.remove(), 10000);
 }
 
-const safeZone = 75
+const safeZone = 120
 
 function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
     return (
