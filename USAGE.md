@@ -56,7 +56,7 @@ Note that an https page cannot open a `ws:` socket, so hosting the pages over ht
 
 ## Running the event
 
-- One wish per playthrough. After a win or a loss, the **"Make Anoter Wish?"** button reloads the page for the next player.
+- One wish per playthrough. After a win or a loss, the **"Make Another Wish?"** button reloads the page for the next player.
 - Only wins reach the wall. A player who runs out of lives sees the lose modal and their wish is discarded.
 - The wall never clears itself. Reload `/display` to start a fresh wall — there is no persistence, so **reloading erases every wish collected so far**.
 - The wall tiles wishes into 6 columns, always filling the shortest column next. Long wishes make tall tiles; with enough entries, columns will eventually run past the bottom of the screen, since there is no scroll or overflow handling.

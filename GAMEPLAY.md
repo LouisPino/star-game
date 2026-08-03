@@ -68,7 +68,7 @@ Lose all 5 lives and the run ends wherever you are. The lose modal appears and t
 
 ## Playing again
 
-Both modals have a **"Make Anoter Wish?"** button. It reloads the page and returns you to the start screen with an empty wish box. Everything resets: lives, timer, and the background scroll.
+Both modals have a **"Make Another Wish?"** button. It reloads the page and returns you to the start screen with an empty wish box. Everything resets: lives, timer, and the background scroll.
 
 ## Tactics
 
