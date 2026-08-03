@@ -1,28 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-    initializeWebSocket(location.hostname);
-    function initializeWebSocket(ip) {
-        socket = new WebSocket(`ws://${ip}:8000/display`);
-        // Confirm connection success
-        socket.onopen = function (e) {
-            console.log("WebSocket connection established!");
-        };
-
-        // Run when message is received from server (Max -> Server -> Client)
-        socket.onmessage = function (event) {
-            let msg = JSON.parse(event.data);
-            switch (msg.type) {
-                case `initialFileServe`:
-                    break;
-                case "newStar":
-                    // handleNewStar(msg.data)
-                    break;
-            }
-        };
-    }
-});
-
-
-
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
@@ -40,7 +15,7 @@ replayBtns[1].addEventListener("click", () => {
 
 const baseBottom = 400;
 let lives = 5;
-const maxTime = 75; //75
+const maxTime = 15; //75
 const endBuffer = 5;
 let playerX = 300;
 let playerY = baseBottom;
@@ -244,14 +219,9 @@ function gameWin() {
     if (gameAlreadyWon) return; // prevent running more than once
     gameAlreadyWon = true;
 
-    sendToServer({ type: "win", val: document.getElementById("wish").value })
+    StarTransport.send(document.getElementById("wish").value)
 
     setTimeout(() => {
         winModal.style.top = "15vh"
     }, 100);
-}
-
-
-function sendToServer(msg) {
-    socket.send(JSON.stringify(msg));
 }
