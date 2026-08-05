@@ -1,46 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Star Game</title>
     <link rel="stylesheet" href="style.css" />
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="start-screen">
-        <h1>Type a wish!</h1>
-        <textarea id="wish"></textarea>
-        <button id="start-button">Make your wish!</button>
+      <h1>Life can be hard. <br/> What do you think could make the world a better place?</h1>
+    
+      <textarea id="wish"></textarea>
+      <button id="start-button">Make your wish!</button>
     </div>
 
     <div id="game-area">
-        <img id="tall-bg" src="Extended_BG.png" />
-        <img id="player" src="starWish.png">
-        <div id="message">Get Ready!</div>
+      <img id="tall-bg" src="Extended_BG.png" />
+      <img id="player" src="starWish.png" />
+      <div id="message">Get Ready!</div>
     </div>
 
     <div id="life-counter">
-        <img id="life-star" src="starWish.png" />- <span id="lives">5</span>
+      <img id="life-star" src="starWish.png" />- <span id="lives">3</span>
     </div>
     <div id="win-modal">
-        <h2>Congratulations! Your wish has been sent to rest among the stars!
-        </h2>
-        <img id="win-star" src="starWish.png">
+      <h2>Congratulations! Your wish has been sent to rest among the stars!</h2>
+      <img id="win-star" src="starWish.png" />
 
-        <h2>Thanks for playing, and may all your wishes come true!</h2>
-        <button class="replay-button">Make Another Wish?</button>
+      <h2>Thanks for playing, and may all your wishes come true!</h2>
+      <button class="replay-button">Make Another Wish?</button>
     </div>
     <div id="lose-modal">
-        <h2>Oh no! Your wish got caught in the hustle and bussle!
-        </h2>
-        <img id="win-star" src="starWish.png">
-        <button class="replay-button">Make Another Wish?</button>
+      <h2>Oh no! Your wish got caught in the hustle and bussle!</h2>
+      <img id="win-star" src="starWish.png" />
+      <button class="replay-button">Make Another Wish?</button>
     </div>
 
     <script src="transport.js"></script>
     <script src="script.js"></script>
-</body>
-
+  </body>
 </html>

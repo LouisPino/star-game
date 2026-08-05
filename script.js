@@ -1,4 +1,19 @@
+// Browsers only allow fullscreen from a user gesture, never on page load,
+// so arm it on the first click/keypress and again when the game starts.
+function goFullscreen() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const el = document.documentElement;
+    const request = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!request) return;
+    const result = request.call(el, { navigationUI: "hide" });
+    if (result && result.catch) result.catch(() => { });
+}
+
+window.addEventListener("pointerdown", goFullscreen, { once: true });
+window.addEventListener("keydown", goFullscreen, { once: true });
+
 const gameArea = document.getElementById('game-area');
+const lifeCounter = document.getElementById('life-counter');
 const player = document.getElementById('player');
 const livesDisplay = document.getElementById('lives');
 const tallBg = document.getElementById('tall-bg');
@@ -6,15 +21,49 @@ const message = document.getElementById('message');
 const replayBtns = document.querySelectorAll('.replay-button')
 const winModal = document.getElementById('win-modal')
 const loseModal = document.getElementById('lose-modal')
-replayBtns[0].addEventListener("click", () => {
-    window.location.reload();
-})
-replayBtns[1].addEventListener("click", () => {
-    window.location.reload();
-})
+const wishInput = document.getElementById('wish')
+const startScreen = document.getElementById('start-screen')
+
+// Replaying reloaded the page, which dropped fullscreen. Reset in place instead.
+replayBtns.forEach(btn => btn.addEventListener("click", () => {
+    goFullscreen(); // a click is a user gesture, so this recovers if Esc was hit
+    resetGame();
+}))
+
+// The play field is authored at a fixed 900x900. Scale it to whatever the screen
+// can actually fit -- up on big monitors, down on laptops -- so it always fills
+// the height with the life counter still visible underneath.
+const designSize = 900;
+const fitPadding = 16;
+
+function fitGameToScreen() {
+    const available = window.innerHeight - lifeCounter.offsetHeight - fitPadding;
+    const scale = Math.max(
+        0.2,
+        Math.min(available / designSize, window.innerWidth / designSize)
+    );
+    document.documentElement.style.setProperty("--game-scale", scale);
+}
+
+// Viewport metrics aren't final on the same tick as a fullscreen or monitor
+// change, and the counter's height depends on a webfont that loads late, so
+// re-measure on the next frame too.
+function scheduleFit() {
+    fitGameToScreen();
+    requestAnimationFrame(fitGameToScreen);
+}
+
+window.addEventListener("resize", scheduleFit);
+window.addEventListener("load", scheduleFit);
+document.addEventListener("fullscreenchange", scheduleFit);
+document.addEventListener("webkitfullscreenchange", scheduleFit);
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitGameToScreen);
+}
+fitGameToScreen();
 
 const baseBottom = 400;
-let lives = 5;
+let lives = 3;
 const maxTime = 75; //75
 const endBuffer = 5;
 let playerX = 300;
@@ -31,6 +80,38 @@ const obstacleSpeedMax = 1;
 
 let stageActive = true;
 let timePassed = 0
+
+// Handles for everything a run leaves behind, so a replay can tear it all down
+// instead of relying on a page reload.
+let running = false;
+let gameTimer = null;
+let loopId = null;
+let flashInterval = null;
+let pendingTimeouts = [];
+
+function later(fn, ms) {
+    const id = setTimeout(fn, ms);
+    pendingTimeouts.push(id);
+    return id;
+}
+
+function stopRun() {
+    running = false;
+    if (loopId !== null) {
+        cancelAnimationFrame(loopId);
+        loopId = null;
+    }
+    if (gameTimer !== null) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+    }
+    if (flashInterval !== null) {
+        clearInterval(flashInterval);
+        flashInterval = null;
+    }
+    pendingTimeouts.forEach(clearTimeout);
+    pendingTimeouts = [];
+}
 function movePlayer(e) {
     if (e.key === "ArrowLeft") playerX -= moveSpeed;
     if (e.key === "ArrowRight") playerX += moveSpeed;
@@ -84,7 +165,7 @@ function launchObstacle() {
     obstacle.dataset.direction = dirNum ? "right" : "left";
     gameArea.appendChild(obstacle);
 
-    setTimeout(() => obstacle.remove(), 10000);
+    later(() => obstacle.remove(), 10000);
 }
 
 const safeZone = 120
@@ -98,11 +179,18 @@ function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
     );
 }
 
+// Restarting the scroll needs a forced reflow between the reset and the target,
+// otherwise the browser collapses both style writes into one frame and the
+// transition never re-runs (the background would sit still on a replay).
+function startBackgroundScroll() {
+    tallBg.style.transition = "none";
+    tallBg.style.top = "-6000px";
+    void tallBg.offsetHeight;
+    tallBg.style.transition = `top ${maxTime}s linear`;
+    tallBg.style.top = "0px";
+}
+
 function gameLoop() {
-    tallBg.style.transition = "top 0s linear"
-    tallBg.style.top = "-6000px"
-    tallBg.style.transition = `top ${maxTime}s linear`
-    tallBg.style.top = "0px"
     player.style.bottom = `${playerY}px`;
     let visible = true;
     const interval = 150; // ms
@@ -129,7 +217,8 @@ function gameLoop() {
                 gameOver();
                 return;
             } else {
-                const flashInterval = setInterval(() => {
+                clearInterval(flashInterval);
+                flashInterval = setInterval(() => {
                     player.style.visibility = visible ? 'hidden' : 'visible';
                     visible = !visible;
                 }, interval);
@@ -147,8 +236,8 @@ function gameLoop() {
     });
 
 
-    if (stageActive) requestAnimationFrame(gameLoop);
-    else setTimeout(() => requestAnimationFrame(gameLoop), 100);
+    // Checked after the obstacle pass, since a collision there can end the run.
+    if (running) loopId = requestAnimationFrame(gameLoop);
 }
 
 function resetStage() {
@@ -173,7 +262,7 @@ function resetStage() {
 function startSpawningObstacles() {
     launchObstacle();
     if (timePassed < maxTime - endBuffer - spawnInterval / 1000) {
-        setTimeout(startSpawningObstacles, spawnInterval);
+        later(startSpawningObstacles, spawnInterval);
     }
 }
 
@@ -182,24 +271,30 @@ window.addEventListener('keydown', movePlayer);
 document.getElementById("message").style.display = "none";
 
 function startGame() {
-    if (document.getElementById("wish").value === "") {
+    if (wishInput.value === "") {
         alert("Type a wish first!")
         return
     }
-    document.getElementById("start-screen").style.display = "none";
-    document.getElementById("message").style.display = "block";
-    setTimeout(() => {
+    goFullscreen();
+    stopRun(); // never let a previous run's timers or loop survive into this one
+    running = true;
+    scheduleFit(); // fullscreen may have just changed the viewport
+    startScreen.style.display = "none";
+    message.style.display = "block";
+    livesDisplay.textContent = lives;
+    startBackgroundScroll();
+    later(() => {
         message.style.display = 'none';
         livesDisplay.style.visibilty = "visible"
-        setTimeout(startSpawningObstacles, 1000)
+        later(startSpawningObstacles, 1000)
     }, 3000)
-    requestAnimationFrame(gameLoop);
+    loopId = requestAnimationFrame(gameLoop);
 
     // Start game timer
     gameTimer = setInterval(() => {
         timePassed++;
         if (timePassed >= maxTime) {
-            setTimeout(gameWin, 3000)
+            later(gameWin, 3000)
         }
     }, 1000);
 }
@@ -209,6 +304,7 @@ document.getElementById("start-button").addEventListener("click", startGame);
 
 
 function gameOver() {
+    stopRun(); // otherwise obstacles keep spawning and the clock keeps running
     setTimeout(() => {
         loseModal.style.top = "15vh"
     }, 100);
@@ -219,9 +315,43 @@ function gameWin() {
     if (gameAlreadyWon) return; // prevent running more than once
     gameAlreadyWon = true;
 
-    StarTransport.send(document.getElementById("wish").value)
+    StarTransport.send(wishInput.value)
+    stopRun();
 
     setTimeout(() => {
         winModal.style.top = "15vh"
     }, 100);
 }
+
+// Put everything back to its pre-game state without touching the document, so
+// the fullscreen session survives into the next round.
+function resetGame() {
+    stopRun();
+
+    lives = 3;
+    timePassed = 0;
+    spawnInterval = 5000;
+    gameAlreadyWon = false;
+    playerX = 300;
+    playerY = baseBottom;
+
+    livesDisplay.textContent = lives;
+    player.style.left = `${playerX}px`;
+    player.style.bottom = `${playerY}px`;
+    player.style.visibility = "visible";
+
+    document.querySelectorAll('.obstacle').forEach(el => el.remove());
+
+    tallBg.style.transition = "none";
+    tallBg.style.top = "-6000px";
+
+    message.style.display = "none";
+    winModal.style.top = "120vh";
+    loseModal.style.top = "120vh";
+
+    wishInput.value = "";
+    startScreen.style.display = "";
+    wishInput.focus();
+}
+
+resetGame();
