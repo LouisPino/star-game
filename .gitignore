@@ -28,6 +28,10 @@ Desktop.ini
 *.swp
 *~
 
+# Audio masters -- the compressed music.ogg/.m4a are what ship
+*.wav
+*.aiff
+
 # Build / cache output
 dist/
 build/

@@ -34,6 +34,24 @@ h1{
     height: 32px;
 }
 
+/* Sits above the start screen (10) and the modals (11) so the hint is readable
+   at every point in a round. The dark pill keeps it legible over all three
+   backdrops it can land on: the pink start screen, the aliceblue modals, and
+   the dark play field. */
+#mute-hint {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 12;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background-color: rgba(17, 17, 17, 0.6);
+    color: white;
+    font-size: 22px;
+    pointer-events: none;
+    user-select: none;
+}
+
 #wish {
     height: 200px;
     width: 400px;

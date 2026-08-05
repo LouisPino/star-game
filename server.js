@@ -44,7 +44,10 @@ const server = http.createServer((req, res) => {
         '.ttf': 'font/ttf',
         '.eot': 'application/vnd.ms-fontobject',
         '.otf': 'font/otf',
-        '.json': 'application/json'
+        '.json': 'application/json',
+        '.ogg': 'audio/ogg',
+        '.m4a': 'audio/mp4',
+        '.mp3': 'audio/mpeg'
     };
 
     let contentType = mimeTypes[extname] || 'application/octet-stream';

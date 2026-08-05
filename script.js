@@ -23,6 +23,29 @@ const winModal = document.getElementById('win-modal')
 const loseModal = document.getElementById('lose-modal')
 const wishInput = document.getElementById('wish')
 const startScreen = document.getElementById('start-screen')
+const music = document.getElementById('music')
+
+// Autoplay is blocked until the first gesture, so arm playback alongside
+// fullscreen. Nothing in startGame or resetGame touches it -- the track runs
+// unbroken across rounds now that replaying no longer reloads the page.
+function startMusic() {
+    const played = music.play();
+    if (played && played.catch) played.catch(() => { });
+}
+
+window.addEventListener("pointerdown", startMusic, { once: true });
+window.addEventListener("keydown", startMusic, { once: true });
+
+// There is no on-screen control, so leave the operator a mute key. Skipped
+// while the wish box has focus, or typing an "m" would cut the music.
+const muteHint = document.getElementById('mute-hint')
+
+window.addEventListener("keydown", (e) => {
+    if (e.key !== "m" && e.key !== "M") return;
+    if (e.target === wishInput) return;
+    music.muted = !music.muted;
+    muteHint.textContent = music.muted ? "Press M to unmute" : "Press M to mute";
+});
 
 // Replaying reloaded the page, which dropped fullscreen. Reset in place instead.
 replayBtns.forEach(btn => btn.addEventListener("click", () => {
